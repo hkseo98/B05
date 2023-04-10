@@ -63,7 +63,8 @@ def getIdandPW():
                     continue
                 else:
                     # id 중복 검사
-                    userFile = open("users.txt", 'r')
+                    
+                    userFile = open("users.txt", 'r', encoding="UTF-8")
                     userFileLines = userFile.readlines()
                     userFile.close()
                     for line in userFileLines:
@@ -130,7 +131,7 @@ def getName():
     while True:
         print("\n이름 입력(한글 문자 2~5)")
         name = input(">")
-        if len(name) < 2 and len(name) > 5:
+        if len(name) < 2 or len(name) > 5:
             print("올바르지 않는 형식입니다! 다시 입력해주세요.")
             continue
         if isKorean(name) == False:
@@ -169,7 +170,7 @@ def makeNewUser(id:str, pw:str, major:str, name:str, isStudent:bool):
     else:
         majorNum = major.index(major) + 1
         
-    userFile = open("users.txt", 'r')
+    userFile = open("users.txt", 'r', encoding="UTF-8")
     userFileLines = userFile.readlines()
     userFile.close()
     # 학번 설정
@@ -182,7 +183,7 @@ def makeNewUser(id:str, pw:str, major:str, name:str, isStudent:bool):
                 studentOrProfessorNum = studentOrProfessorNum + 1
     studentOrProfessorNum = majorNum * numLen2 + studentOrProfessorNum + 1    
    
-    userFile = open("users.txt", 'a')
+    userFile = open("users.txt", 'a', encoding="UTF-8")
     userFile.write("\n\n" + id + "    " + pw + "    " + str(studentOrProfessorNum) + "    " + name)
     userFile.close()
     print("회원가입이 완료되었습니다.")
