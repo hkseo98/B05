@@ -9,7 +9,7 @@ def login():
         id = input("ID 입력 > ")
         pw = input("PW 입력 > ")
         # 파일 읽기
-        usersFile = open('users.txt', 'r')
+        usersFile = open('users.txt', 'r', encoding="UTF-8")
         usersFileLines = usersFile.readlines()
         usersFile.close()
 
