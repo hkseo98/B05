@@ -124,9 +124,6 @@ def getIdandPW():
                             print("재입력하신 PW가 처음 입력하신 PW와 일치하지 않습니다. 다시 입력해주세요.")
                             continue
                             
-         
-                        
-                    
 def getName():
     while True:
         print("\n이름 입력(한글 문자 2~5)")
@@ -158,11 +155,15 @@ def getMajor():
 def makeNewUser(id:str, pw:str, major:str, name:str, isStudent:bool):
     # 학생이면 학번이 5자리 수, 교수면 교수번호가 4자리 수
     if isStudent:
-        numLen = 5
         numLen2 = 10000
+        userFile = open("student_number.txt", 'r', encoding="UTF-8")
+        userFileLines = userFile.readlines()
+        userFile.close()
     else:
-        numLen = 4
         numLen2 = 1000
+        userFile = open("professor_number.txt", 'r', encoding="UTF-8")
+        userFileLines = userFile.readlines()
+        userFile.close()
     # 학과 번호 설정
     majorNum = 1
     if len(major) == 1:
@@ -170,22 +171,27 @@ def makeNewUser(id:str, pw:str, major:str, name:str, isStudent:bool):
     else:
         majorNum = major.index(major) + 1
         
-    userFile = open("users.txt", 'r', encoding="UTF-8")
-    userFileLines = userFile.readlines()
-    userFile.close()
+    
     # 학번 설정
     studentOrProfessorNum = 0
     for line in userFileLines:
-        # 사용자 정보 첫 줄인 경우
-        if len(line.strip().split("    ")) == 4:
-            # 학과번호가 같은 학생 사용자가 있을 때마다 studentOrProfessorNum 1씩 늘림
-            if line.strip().split("    ")[2][0] == str(majorNum) and len(line.strip().split("    ")[2]) == numLen:
-                studentOrProfessorNum = studentOrProfessorNum + 1
+        # 학과번호가 같은 학생 사용자가 있을 때마다 studentOrProfessorNum 1씩 늘림
+        if line.strip()[0] == str(majorNum):
+            studentOrProfessorNum = studentOrProfessorNum + 1
     studentOrProfessorNum = majorNum * numLen2 + studentOrProfessorNum + 1    
-   
+    # 유저 파일에 기록
     userFile = open("users.txt", 'a', encoding="UTF-8")
     userFile.write("\n\n" + id + "    " + pw + "    " + str(studentOrProfessorNum) + "    " + name)
     userFile.close()
+    # 학번/교수번호 파일에 기록
+    if isStudent:
+        userFile = open("student_number.txt", 'a', encoding="UTF-8")
+        userFile.write("\n" + str(studentOrProfessorNum))
+        userFile.close()
+    else:
+        userFile = open("professor_number.txt", 'a', encoding="UTF-8")
+        userFile.write("\n" + str(studentOrProfessorNum))
+        userFile.close()
     print("회원가입이 완료되었습니다.")
     return
     
