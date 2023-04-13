@@ -26,7 +26,7 @@ def login():
                     # 학생인지 교수인지 여부 설정
                     # 학번이 5자리면 학생
                     isStudent = len(elementsOfLine[2]) == 5
-                    return isLoggedIn, isStudent
+                    return isLoggedIn, isStudent, id
         failCount = failCount + 1
         if failCount == 5:
             print("\n5회 틀렸습니다. 시작 화면으로 돌아갑니다.\n")

@@ -181,16 +181,16 @@ def makeNewUser(id:str, pw:str, major:str, name:str, isStudent:bool):
     studentOrProfessorNum = majorNum * numLen2 + studentOrProfessorNum + 1    
     # 유저 파일에 기록
     userFile = open("users.txt", 'a', encoding="UTF-8")
-    userFile.write("\n\n" + id + "    " + pw + "    " + str(studentOrProfessorNum) + "    " + name)
+    userFile.write(id + "    " + pw + "    " + str(studentOrProfessorNum) + "    " + name + "\n\n")
     userFile.close()
     # 학번/교수번호 파일에 기록
     if isStudent:
         userFile = open("student_number.txt", 'a', encoding="UTF-8")
-        userFile.write("\n" + str(studentOrProfessorNum))
+        userFile.write(str(studentOrProfessorNum)+"\n")
         userFile.close()
     else:
         userFile = open("professor_number.txt", 'a', encoding="UTF-8")
-        userFile.write("\n" + str(studentOrProfessorNum))
+        userFile.write(str(studentOrProfessorNum)+"\n")
         userFile.close()
     print("회원가입이 완료되었습니다.")
     return

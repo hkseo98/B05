@@ -1,5 +1,6 @@
 from login_function import login
 from register_function import register
+from professor_management import professorManger
 
 def main():
     isLoggedIn = False 
@@ -15,7 +16,7 @@ def main():
         selectedMainMenu = input("> ")
         if selectedMainMenu == "1":
             # 로그인 시작
-            isLogged, isStu = login()
+            isLogged, isStu, id = login()
             isLoggedIn = isLogged
             isStudent = isStu
             # 로그인 성공 시 
@@ -26,8 +27,9 @@ def main():
                     return
                 else:
                     print("교수사용자 로그인 완료")
-                    # 교수 사용자 로그인 이후 단계로 이동
-                    return
+                    professorManger(id)
+                    continue
+                    
         elif selectedMainMenu == "2":
             # 회원가입 시작
             print("회원가입")
