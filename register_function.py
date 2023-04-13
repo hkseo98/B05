@@ -36,7 +36,6 @@ def register():
                         
 def getIdandPW():
     pattern = re.compile("[ㄱ-ㅎ가-힣]+")
-
     while True:
                 isExistingId = False
                 print("\nID 입력(알파벳+숫자길이6~12)\n(공백/개행 입력 불가)")
@@ -70,9 +69,9 @@ def getIdandPW():
                     for line in userFileLines:
                         # 사용자 정보 첫 줄인 경우
                         if len(line.strip().split("    ")) == 4:
-                            # ID 중복된 경우 오류 메시지 
+                            # ID 이미 등록된 경우 오류 메시지 
                             if line.strip().split("    ")[0].upper() == id.upper():
-                                print("중복된 ID입니다! 다시 입력해주세요.")
+                                print("이미 등록된 ID입니다! 다시 입력해주세요.")
                                 isExistingId = True
                                 continue
                 # 중복되지 않았을 경우 
