@@ -1,6 +1,7 @@
 from login_function import login
 from register_function import register
 from professor_management import professorManger
+from student_management import studentmanager
 
 def main():
     isLoggedIn = False 
@@ -23,7 +24,7 @@ def main():
             if isLoggedIn:
                 if isStudent:
                     print("학생사용자 로그인 완료")
-                    # 학생 사용자 로그인 이후 단계로 이동
+                    studentmanager(id)
                     return
                 else:
                     print("교수사용자 로그인 완료")
