@@ -15,7 +15,7 @@ def login():
 
         for line in usersFileLines:
             elementsOfLine = line.strip().split('    ')
-            if len(elementsOfLine) == 4:
+            if len(elementsOfLine) == 5:
                 lineId = elementsOfLine[0]
                 linePw = elementsOfLine[1]
                 # id 대분자로 둘 다 바꾼 뒤 동치비교, pw 동치비교

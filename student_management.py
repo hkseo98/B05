@@ -1,13 +1,14 @@
 import os
 import string
-import msvcrt as ms
 import login_function as m
 import creat_subject
 import re
 from time import sleep
+import fileinput
+import sys
+from student_sub_manage import manageSub
 
-def wait():
-     ms.getch()
+
 
 def Menu():
 
@@ -34,7 +35,7 @@ def studentmanager(id):
 
             print("전공/교양과목 (조회를 원하는 과목부분을 입력: 전공 or 교양)")
             while True:
-                 print("조회 선택: ", end = "")
+                 print("조회 선택> ", end = "")
                  one_select = input()
                  if (one_select == "전공"):
                     f1 = open('subjects.txt', 'r', encoding='UTF8')
@@ -46,7 +47,7 @@ def studentmanager(id):
                               pass
                     f1.close()
                     print("돌아가려면 아무 키 입력", end = "")
-                    wait()
+                    input()
                     break
             
                  elif (one_select == "교양"):
@@ -59,7 +60,7 @@ def studentmanager(id):
                               pass
                     f2.close()
                     print("돌아가려면 아무 키 입력", end = "")
-                    wait()
+                    input()
                     break
                  
                  else:
@@ -69,8 +70,24 @@ def studentmanager(id):
             os.system('cls')
             print("수강신청 (메인메뉴 복귀 원하면 '0' 입력)")
             while True:
+                if (return_num == 10):
+                    break
+                
+                return_num = 5
 
-                #유저 파일 생성 and 확인
+                #과목번호 입력 
+                print("과목번호 입력> ", end = "")
+                student_select_sub = input()
+                
+                #공백제거
+                student_select_sub = student_select_sub.replace(" ", "")
+
+                if (student_select_sub == 0):
+                    print("신청을 취소하였습니다.")
+                    sleep(5)
+                    break
+
+                #유저 파일 확인
                 usersFile = open('users.txt', 'r', encoding='UTF8')
                 usersFIleLines = usersFile.readlines()
                 usersFile.close()
@@ -78,99 +95,182 @@ def studentmanager(id):
                 for line in usersFIleLines:
                     elementsOfLine = line.strip().split('    ')
                     
-                    if (len(elementsOfLine) == 4):
+                    if (len(elementsOfLine) == 5):
                         if (elementsOfLine[0] == id):
+                            userid = elementsOfLine[0]
+                            userpw = elementsOfLine[1]
                             userNum = elementsOfLine[2]
                             userName = elementsOfLine[3]
+                            usersub_amount = elementsOfLine[4]
+
+                #현재 학점 정수화
+                usersub_amount = int(usersub_amount)
+
+                #과목 파일 확인 
+                subFile = open('subjects.txt', 'r', encoding='UTF8')
+                subFileLines = subFile.readlines()
+                subFile.close()
+
+                #맞는 과목 번호인지 확인
+                checksub_num = []
+
+                for line in subFileLines:
+                    elementsOfLine = line.strip().split('    ')
+
+                    checksub_num.append(line)
+
+                if student_select_sub not in checksub_num:
+                    print("존재하지 않는 과목번호! 다시 입력하세요.")
+                    continue
+
+                #인원 확인하기 
+                for line in subFileLines:
+                    elementsOfLine = line.strip().split('    ')
+
+                    if (len(elementsOfLine) == 9):
+                        if (elementsOfLine[0] == student_select_sub):
+                            max_student = elementsOfLine[8]
+                            cur_student = elementsOfLine[7]
+
+                #정수화
+                max_student = int(max_student)
+                cur_student = int(cur_student)
+
+                if ((max_student - cur_student) == 0):
+                    print("수강인원이 꽉 차 있습니다. 다시 입력 해주세요. ")
+                    continue
+
+                #입력한 과목 추출
+                input_sub = []
+
+                for line in subFileLines:
+                    elementsOfLine = line.strip().split('    ')
+
+                    if(elementsOfLine[0] == student_select_sub):
+                        subID = elementsOfLine[0]
+                        subClass = elementsOfLine[1]
+                        subCredit = elementsOfLine[2]
+                        subName = elementsOfLine[3]
+                        TeacherName = elementsOfLine[4]
+                        subTime = elementsOfLine[5]
+                        subPlace = elementsOfLine[6]
+
+                newSub = subID + "    " + subClass + "    " + subCredit + "    " + subName + "    " + TeacherName + "    " + subTime + "    " + subPlace + "\n"
 
 
+                #동일 시간 확인 
 
-                #처음 과목 신청인지 검사 
-                path = 'sugang'
-                for filename in os.listdir(path):
-                    if filename == userNum + ".txt":
-                        # 과목파일 읽기
-                        subFile = open('subjects.txt', 'r', encoding='UTF8')
-                        subFileLines = subFile.readlines()
-                        subFile.close()
+                usersubList = []
 
-                        # 유저과목 읽기
-                        userfile = open('sugang'+ userNum + '.txt', 'r', encoding='UTF8')
-                        userfilelines = userfile.readlines()
-                        userfile.close()
+                usersFile = open('users.txt', 'r', encoding='UTF8')
+                usersFIledata = usersFile.readl()
+                usersFile.close()
 
-                        # 과목리스트 생성
-                        subList = []
-                        wholeSubList = []
+                usersubList = usersFIledata.split("\n\n")
+
+                for i in usersubList:
+                    line = i.split("\n")
+                    for j in line:
+                        data = line.split("    ")
+      
+                        if data[0] == id:
+                             usersubList = i
+                             
+
+
+                #여기 구현 아직 안됨 
                 
-                        for line in subFileLines:
+                
+                
+                
+                #유저파일에 과목 추가 
+                subList = []
+
+                for line in subFileLines:
+                    elementsOfLine = line.strip().split('    ')
+
+                    if(elementsOfLine[0] == student_select_sub):
+                        subInfo = elementsOfLine
+
+                #과목정보 출력
+                print(subInfo)
+
+                while True:
+
+                    print("신청하시겠습니까?(Y/N) > ", end = "")
+                    yn = input()
+
+                    # 공백 제거
+                    yn = yn.replace(" ", "")
+
+                    if (yn == "Y"):
+                        #유저정보에 과목추가
+                        usersFile = open('users.txt', 'r', encoding='UTF8')
+                        usersFIleLines = usersFile.readlines()
+                        usersFile.close()
+
+                        index = 0
+
+                        for line in usersFIleLines:
                             elementsOfLine = line.strip().split('    ')
-                    
-                            # 전체 과목리스트
-                            wholeSubList.append(line)
-                            
-                            
-                        for line in userfilelines:
-                            eleofLine = line.strip().split('    ')
-                            
-                            
-                            
-                        checkfile = open('subjects.txt', 'r', encoding='UTF8')
-                        lines = checkfile.readlines()
-                        for each_line in lines:
-                            if each_line.find(two_select) > 0:
-                                subject = each_line
 
-                        filepath = os.path.join('sugang', userNum + '.txt')
-                        f3 = open(filepath, "w")
-                        f3.write(subject)
-                        f3.close()
+                            index += 1
+        
+                            if(elementsOfLine[0] == id):
+                                usersFIleLines.insert(index, newSub)
 
+                        usersFile = open('users.txt', 'w', encoding='UTF8')
+    
+                        for line in usersFIleLines:
+                            usersFile.write(line)
+                            usersFile.close()
+
+                        #유저 총학점 수정
+                        subCredit = int(subCredit)
+                        final_credit = usersub_amount + subCredit
+
+                        #총 학점 문자화
+                        final_credit = str(final_credit)
+
+                        newUserInfo = userid + "    " + userpw + "    " + userNum + "    " + userName +  "    " + final_credit + "\n"
+
+                        with fileinput.FileInput('users.txt', inplace = True) as f:
+                            for line in f:
+                                if id in line:
+                                    line = line.replace(line, newUserInfo)
+                                sys.stdout.write(line)
+
+                        #과목파일 수강생 수 정정
+                        new_cur_student = cur_student + 1
+                        #정수를 문자화
+                        new_cur_student = str(new_cur_student)
+
+                        newSubInfo = subID + "    " + subClass + "    " + subCredit + "    " + subName + "    " + TeacherName + "    " + subTime + "    " + subPlace + "    " + new_cur_student + "    " + max_student + "\n"
+
+                        with fileinput.FileInput('subjects.txt', inplace = True) as f:
+                            for line in f:
+                                if student_select_sub in line:
+                                    line = line.replace(line, newSubInfo)
+                                sys.stdout.write(line)
+
+
+                        print("정상적으로 신청되었습니다.")
+                        return_num = 10
+                        break
+
+                    elif (yn == "N"):
+                        print("신청을 취소하였습니다.")
+                        return_num = 10
                         break
 
                     else:
-                        checkfile = open('subjects.txt', 'r', encoding='UTF8')
-                        lines = checkfile.readlines()
-                        for each_line in lines:
-                            while True:
-                                two_select = input()
-                                if (two_select == "0"):
-                                    break
-                                 
-                                elif each_line.find(two_select) > 0:
-                                    subject = each_line
-                                    filepath = os.path.join("sugang/"+userNum+".txt")
-                                    f3 = open(filepath, "w")
-                                    f3.write(subject)
-                                    f3.close()
-                                    break
-                                else:
-                                    print("존재하지 않는 과목번호! 다시 입력하세요")
-                                    print("과목번호 입력", end = "")
+                        print("잘못된 입력! 다시 입력하세요.")
 
-                    break
-                
 
-                
-
-                """f2 = open('subjects.txt', 'r', encoding='UTF8')
-                lines = f2.readlines()
-                for each_line in lines:
-                    if each_line.find(two_select) > 0:
-                        print(each_line)
-                        while True: 
-                            print("신청하시겠습니까?(Y/N)", end = "")
-                            choose_input = input()
-                            if (choose_input == 'Y'):
-                                print("f")"""
-
-                            #유저 개인 파일 필요 
-                                
-                
 
         elif (student_select == "3"):
-            os.system('cls')            
-
+            os.system('cls')
+            manageSub(id)           
 
 
         elif (student_select == "4"):

@@ -11,7 +11,7 @@ def creatSubject(id):
     for line in usersFIleLines:
         elementsOfLine = line.strip().split('    ')
 
-        if (len(elementsOfLine) == 4):
+        if (len(elementsOfLine) == 5):
             if (elementsOfLine[0] == id):
                 userNum = elementsOfLine[2]
                 userName = elementsOfLine[3]

@@ -14,8 +14,10 @@ def register():
             major = getMajor()
             # 이름 입력 
             name = getName()
+            #학점 계산용
+            sub = "0"
             # 회원가입 완료
-            makeNewUser(id, pw, major, name, True)
+            makeNewUser(id, pw, major, name, sub, True)
             return
         # 교수 회원가입  
         elif userType == "2":
@@ -25,8 +27,10 @@ def register():
             major = getMajor()
             # 이름 입력 
             name = getName()
+            #학점 계산용
+            sub = "0"
             # 회원가입 완료
-            makeNewUser(id, pw, major, name, False)
+            makeNewUser(id, pw, major, name, sub, False)
             return
         else:
             print("올바르지 않는 형식입니다! 다시 입력해주세요.")
@@ -151,7 +155,7 @@ def getMajor():
             continue
         
         
-def makeNewUser(id:str, pw:str, major:str, name:str, isStudent:bool):
+def makeNewUser(id:str, pw:str, major:str, name:str, sub:str, isStudent:bool):
     # 학생이면 학번이 5자리 수, 교수면 교수번호가 4자리 수
     if isStudent:
         numLen2 = 10000
@@ -180,7 +184,7 @@ def makeNewUser(id:str, pw:str, major:str, name:str, isStudent:bool):
     studentOrProfessorNum = majorNum * numLen2 + studentOrProfessorNum + 1    
     # 유저 파일에 기록
     userFile = open("users.txt", 'a', encoding="UTF-8")
-    userFile.write(id + "    " + pw + "    " + str(studentOrProfessorNum) + "    " + name + "\n\n")
+    userFile.write(id + "    " + pw + "    " + str(studentOrProfessorNum) + "    " + name + "    " + sub + "\n\n")
     userFile.close()
     # 학번/교수번호 파일에 기록
     if isStudent:
