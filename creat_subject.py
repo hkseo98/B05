@@ -36,8 +36,8 @@ def creatSubject(id):
             subList.append(line)
 
     # 과목구분별 번호 읽기
-    aNum = 0    
-    bNum = 0    
+    aNum = -1
+    bNum = -1
 
     for line in subFileLines:
         elementsOfLine = line.strip().split('    ')
@@ -54,9 +54,21 @@ def creatSubject(id):
 
 #==========================================================================================================================================================
 
+    print("\n-----------------------------------<과목개설>-----------------------------------")
+
 # 과목 생성 
     # 1. 과목구분 입력
     subID, subClass = getSubClass(aNum, bNum)
+
+    if(subID == "aERROR"):
+        print("\n더이상 전공과목을 개설할 수 없습니다. 교수메뉴로 돌아갑니다.")
+        print("================================================================================\n")
+        return
+    
+    elif (subID == "bERROR"):
+        print("\n더이상 교양과목을 개설할 수 없습니다. 교수메뉴로 돌아갑니다.")
+        print("================================================================================\n")
+        return
 
     # 2. 과목명 입력
     subName = getSubName(wholeSubList)
@@ -77,11 +89,13 @@ def creatSubject(id):
 #==========================================================================================================================================================
 
 # 파일 수정
-    newSub = subID + "    " + subClass + "    " + subCredit + "    " + subName + "    " + userName+"("+userNum+")" + "    " + subTime + "    " + subPlace + "    " + "0" + "    " + maxAvailable + "\n" 
+    newSubinSub = subID + "    " + subClass + "    " + subCredit + "    " + subName + "    " + userName+"("+userNum+")" + "    " + subTime + "    " + subPlace + "    " + "0" + "    " + maxAvailable + "\n" 
+    newSubinUser = subID + "    " + subClass + "    " + subCredit + "    " + subName + "    " + userName+"("+userNum+")" + "    " + subTime + "    " + subPlace + "\n" 
+    
 
     #과목파일 수정
     subFile = open('subjects.txt', 'a', encoding='UTF8')
-    subFile.write(newSub)
+    subFile.write(newSubinSub)
     subFile.close
 
     #유저파일 수정
@@ -97,12 +111,15 @@ def creatSubject(id):
         index += 1
         
         if(elementsOfLine[0] == id):
-            usersFIleLines.insert(index, newSub)
+            usersFIleLines.insert(index, newSubinUser)
 
     usersFile = open('users.txt', 'w', encoding='UTF8')
     
     for line in usersFIleLines:
         usersFile.write(line)
+
+    print("\n과목개설이 완료되었습니다. 교수메뉴로 돌아갑니다.")
+    print("================================================================================\n")
 
 #==========================================================================================================================================================
 
@@ -118,34 +135,52 @@ def getSubClass(aNum, bNum):
         subClass = subClass.replace(" ", "")
 
         # 과목구분 유효성 평가
-        if(subClass == "전공" or subClass == "교양"):
+        if (subClass == "전공" or subClass == "교양"):
 
-            if(subClass == "전공"):
-                if(aNum != 0):
-                    aNum = aNum+1
+            if (subClass == "전공"):
+
+                aNum = aNum+1
+
+                if (aNum < 10):
+                    subID = "A00" + str(aNum)
+
+                elif (10 <= aNum < 100):
+                    subID = "A0" + str(aNum)
+
+                elif (100 <= aNum < 1000):
                     subID = "A" + str(aNum)
 
-                elif (aNum == 0):
-                    subID = "A000"
+                elif (1000 <= aNum):
+                    subID = "aERROR"
 
                 return subID, subClass
             
             elif(subClass == "교양"):
-                
-                if(bNum != 0):
-                    bNum = bNum+1
-                    subID = "B" + str(bNum)
 
-                elif(bNum == 0):
-                    subID = "B000"
-                    
+                bNum = bNum+1
+
+                if (bNum < 10):
+                    subID = "B00" + str(bNum)
+
+                elif (10 <= bNum < 100):
+                    subID = "B0" + str(bNum)
+
+                elif (100 <= bNum < 1000):
+                    subID = "B" + str(bNum)
+                
+                elif (1000 <= bNum):
+                    subID = "bERROR"
+
                 return subID, subClass
         
         else:
             print("존재하지 않는 과목구분입니다. 다시 입력해주세요.")
+            print("\n-------------------------------------------------------------------------------")
 
 #과목명
 def getSubName(wholeSubList):
+
+    subNamePattern = re.compile(r'^[a-zA-Z0-9가-힣]+$')
 
     while True: 
         
@@ -161,16 +196,19 @@ def getSubName(wholeSubList):
         # 1. 문자열 길이 검사
         if (len(subName) < 3 or len(subName) > 10):
             print("과목명은 3~10글자로 구성되어야 합니다. 다시 입력해주세요.")
+            print("\n--------------------------------------------------------------------------------")
             continue
 
         # 2. 한글, 숫자, 알파벳 이외의 문자가 있는지 검사
-        elif (not subName.isalnum()):
-            print("한글, 숫자, 알파벳이외의 글자는 입력 불가능합니다. 다시 입력해주세요.")
+        elif (not subNamePattern.match(subName)):
+            print("한글, 숫자, 알파벳 외의 글자는 입력 불가능합니다. 다시 입력해주세요.")
+            print("\n--------------------------------------------------------------------------------")
             continue
 
         # 3. 숫자로만 구성되어 있는지 검사
         elif (subName.isnumeric()):
             print("과목명은 숫자만으로 구성될 수 없습니다. 다시 입력해주세요.")
+            print("\n--------------------------------------------------------------------------------")
             continue
 
         # 4. 중복 검사
@@ -180,6 +218,7 @@ def getSubName(wholeSubList):
 
                 if (elementOfSub[3] == subName):
                     print("이미 존재하는 과목명입니다. 다시 입력해주세요.")
+                    print("\n--------------------------------------------------------------------------------")
                     isExist = True
 
         if (not isExist):
@@ -190,7 +229,7 @@ def getSubDay():
 
     while True:
 
-        possibleDay = ["월", "화", "수", "목", "금", "토", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"]
+        possibleDay = ["월", "화", "수", "목", "금"]
 
         print("강의요일 입력 > ", end = "")
         subDay = input()
@@ -201,52 +240,63 @@ def getSubDay():
         # 유효성 평가
         for day in possibleDay:
             if(subDay == day):
-
-                if(len(subDay) == 3):
-                    subDay = subDay.replace("요일", "")
                     
                 return subDay
         
-        print("다시 입력해주세요.")
+        print("요일은 '월, 화, 수, 목, 금'만 입력가능합니다. 다시 입력해주세요.")
+        print("\n--------------------------------------------------------------------------------")
 
 # 강의시간
 def getSubTime(subDay, subList):
 
     korPattern = re.compile("[ㄱ-ㅎ가-힣]+")
     numPattern = re.compile("[0-9]+")
+    
+    isFirstPass = False
 
     while True:
 
         isPass = True
 
-        print("강의 시작교시 입력> ", end = "")
-        subStart = input()
+        if(not isFirstPass):
 
+            #강의 시작교시 입력
+            print("강의 시작교시 입력> ", end = "")
+            subStart = input()
+
+            # 공백 제거
+            subStart = subStart.replace(" ", "")
+
+         # 1. 시작교시 유효성 평가
+            # 1.1 숫자로만 구성되어 있는지 검사
+            if (not subStart.isnumeric()):
+                print("숫자 외의 다른문자는 입력할 수 없습니다. 다시 입력해주세요.")
+                print("\n--------------------------------------------------------------------------------")
+                continue
+        
+            # 정수화
+            subStart = int(subStart)
+
+            # 1.2 강의가능 교시인지 검사
+            if (subStart < 1 or subStart > 8):
+                print("강의는 1교시부터 8교시까지만 가능합니다. 다시 입력해주세요.")
+                print("\n--------------------------------------------------------------------------------")
+                continue
+
+        isFirstPass = True
+
+        #강의 종료교시 입력
         print("강의 종료교시 입력> ", end = "")
         subFinish = input()
-
-        # 공백 제거
-        subStart = subStart.replace(" ", "")
-        subFinish = subFinish.replace(" ", "")
-
-        # 1. 시작교시 유효성 평가
-        # 1.1 숫자로만 구성되어 있는지 검사
-        if (not subStart.isnumeric()):
-            print("숫자 외의 다른문자는 입력할 수 없습니다. 다시 입력해주세요.")
-            continue
         
-        # 정수화
-        subStart = int(subStart)
-
-        # 1.2 강의가능 교시인지 검사
-        if (subStart < 1 or subStart > 8):
-            print("강의는 1교시부터 8교시까지만 가능합니다. 다시 입력해주세요.")
-            continue
+        # 공백 제거
+        subFinish = subFinish.replace(" ", "")
 
         # 2. 종료교시 유효성 평가
         # 2.1 숫자로만 구성되어 있는지 검사
         if (not subFinish.isnumeric()):
             print("숫자 외의 다른문자는 입력할 수 없습니다. 다시 입력해주세요.")
+            print("\n--------------------------------------------------------------------------------")
             continue
 
         # 정수화
@@ -255,16 +305,19 @@ def getSubTime(subDay, subList):
         # 2.2 강의가능 교시인지 검사
         if (subFinish < 1 or subFinish >8):
             print("강의는 1교시부터 8교시까지만 가능합니다. 다시 입력해주세요.")
+            print("\n--------------------------------------------------------------------------------")
             continue
 
         # 2.3 시작교시 이후인지 검사
         if (subFinish < subStart):
             print("강의종료는 강의시작 후에 이루어져야 합니다. 다시 입력해주세요.")
+            print("\n--------------------------------------------------------------------------------")
             continue
 
         # 2.4 총 강의시간 검사
         if (subFinish - subStart > 3):
             print("강의시간은 3교시를 초과할 수 없습니다. 다시 입력해주세요.")
+            print("\n--------------------------------------------------------------------------------")
             continue
 
         # 3. 강의시간 중복 검사
@@ -280,12 +333,20 @@ def getSubTime(subDay, subList):
             if (subDay == existDay):
                 if (existStartTime <= subStart and subStart <= existFinishTime):
                     print("이미 개설하신 과목과 강의시간이 겹칩니다. 다시 입력해주세요.")
+                    print("\n--------------------------------------------------------------------------------")
                     isPass = False
                     break
                     
                 elif (existStartTime <= subFinish and subFinish <= existFinishTime):
                     print("이미 개설하신 과목과 강의시간이 겹칩니다. 다시 입력해주세요.")
+                    print("\n--------------------------------------------------------------------------------")
                     isPass = False
+                    break
+                
+                elif (subStart <= existStartTime and existFinishTime <= subFinish):
+                    print("이미 개설하신 과목과 강의시간이 겹칩니다. 다시 입력해주세요.")
+                    print("\n--------------------------------------------------------------------------------")
+                    isPass  = False
                     break
 
         if (isPass):    
@@ -300,7 +361,7 @@ def getSubPlace(subTime, wholeSubList):
     korPattern = re.compile("[ㄱ-ㅎ가-힣]+")
     numPattern = re.compile("[0-9]+")
 
-    possiblePlace = re.compile("[새산공][1-9][0-9][1-9]")
+    possiblePlace = re.compile("[새산공][1-9][0-9][0-9]")
 
     while True:
 
@@ -315,12 +376,14 @@ def getSubPlace(subTime, wholeSubList):
         # 유효성 평가
         # 1. 문자열 길이 검사
         if(len(subPlace) != 4):
-            print("올바르지 못한 강의장소입니다. 다시 입력해주세요.")
+            print("강의장소는 건물이름 새,산,공 중 하나와 3글자의 강의실 번호로 구성됩니다. 다시 입력해주세요.")
+            print("\n--------------------------------------------------------------------------------")
             continue
         
         # 2. 문법 검사
         if(possiblePlace.match(subPlace) == None):
             print("올바르지 못한 강의장소입니다. 다시 입력해주세요.")
+            print("\n--------------------------------------------------------------------------------")
             continue
 
         # 3. 강의실 중복 검사
@@ -342,11 +405,19 @@ def getSubPlace(subTime, wholeSubList):
                 if(existDay == subDay):
                     if (existStartTime <= subStart and subStart <= existFinishTime):
                         print("이미 개설된 과목과 강의시간 및 강의실이 겹칩니다. 다시 입력해주세요.")
+                        print("\n--------------------------------------------------------------------------------")
                         isPass = False
                         break
 
                     elif (existStartTime <= subFinish and subFinish <= existFinishTime):
                         print("이미 개설된 과목과 강의시간 및 강의실이 겹칩니다. 다시 입력해주세요.")
+                        print("\n--------------------------------------------------------------------------------")
+                        isPass = False
+                        break
+
+                    elif (subStart <= existStartTime and existFinishTime <= subFinish):
+                        print("이미 개설된 과목과 강의시간 및 강의실이 겹칩니다. 다시 입력해주세요.")
+                        print("\n--------------------------------------------------------------------------------")
                         isPass = False
                         break
                 
@@ -370,6 +441,7 @@ def getMaxAvailable(subPlace):
         # 1. 숫자로만 구성되어 있는지 검사
         if (not maxAvailable.isnumeric()):
             print("숫자 외의 다른문자는 입력할 수 없습니다. 다시 입력해주세요.")
+            print("\n--------------------------------------------------------------------------------")
             continue
 
         # 정수화
@@ -381,16 +453,19 @@ def getMaxAvailable(subPlace):
         if (subPlace == "새"):
             if (maxAvailable < 10 or maxAvailable > 20):
                 print("강의실에 따른 수강가능 인원은 10~20명입니다. 다시 입력해주세요.")
+                print("\n--------------------------------------------------------------------------------")
                 continue
 
         elif (subPlace == "산"):
             if (maxAvailable < 10 or maxAvailable > 30):
                 print("강의실에 따른 수강가능 인원은 10~30명입니다. 다시 입력해주세요.")
+                print("\n--------------------------------------------------------------------------------")
                 continue
 
         elif (subPlace == "공"):
             if (maxAvailable < 10 or maxAvailable > 40):
                 print("강의실에 따른 수강가능 인원은 10~40명입니다. 다시 입력해주세요.")
+                print("\n--------------------------------------------------------------------------------")
                 continue
         
         return str(maxAvailable)
