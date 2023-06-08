@@ -1,4 +1,4 @@
-from login_function import login
+from login_function import login, removeID
 from register_function import register
 from professor_management import professorManger
 from student_management import studentmanager
@@ -15,7 +15,8 @@ def main():
         print("\n-----------------------------------<메인메뉴>-----------------------------------")
         print("1 -- 로그인")
         print("2 -- 회원가입")
-        print("3 -- 종료")
+        print("3 -- 계정탈퇴")
+        print("4 -- 종료")
         print("--------------------------------------------------------------------------------")
 
         selectedMainMenu = input("메뉴를 입력하시오 > ")
@@ -42,9 +43,11 @@ def main():
         elif selectedMainMenu == "2":
             # 회원가입 시작
             register()
-
         elif selectedMainMenu == "3":
-            # 종료
+            # 계정 탈퇴
+            removeID()
+        elif selectedMainMenu == "4":
+             # 종료
             print("프로그램을 종료합니다.")
             break
         else:

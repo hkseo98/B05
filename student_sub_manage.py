@@ -76,7 +76,7 @@ def deleteSub(usersubList, id):
         
         isExistID = False
         
-        print("철회를 원하는 과목의 과목번호를 입력하시오(0 입력 시 취소) > ", end = "")
+        print("철회를 원하는 과목의 과목번호를 입력하시오 (0 입력 시 취소) > ", end = "")
         inputSubID = input()
 
         # 공백 제거
@@ -97,7 +97,7 @@ def deleteSub(usersubList, id):
                     elementsOfLine = line.strip().split('    ')
 
                     if(elementsOfLine[0] == inputSubID):
-                        print("과목 정보: " + elementsOfLine[0] + "    " + elementsOfLine[1] + "    " + elementsOfLine[2] + "    " + elementsOfLine[3] + "    " + elementsOfLine[4] + "    " + elementsOfLine[5] + "    " + elementsOfLine[6] + "    " + elementsOfLine[7] + "    " + elementsOfLine[8] + "\n")
+                        print("과목 정보: " + elementsOfLine[0] + "    " + elementsOfLine[1] + "    " + elementsOfLine[2] + "    " + elementsOfLine[3] + "    " + elementsOfLine[4] + "    " + elementsOfLine[5] + "    " + elementsOfLine[6] + "    " + elementsOfLine[7] + "    " + elementsOfLine[8] + "    " + elementsOfLine[9] + "    " + elementsOfLine[10] + "\n")
 
         # 과목이 존재하는 경우
         if (isExistID):
@@ -124,12 +124,14 @@ def deleteSub(usersubList, id):
                             subPlace = elementsOfLine[6]
                             cur_student = elementsOfLine[7]
                             max_student = elementsOfLine[8]
+                            subNY = elementsOfLine[9]
+                            subMajor = elementsOfLine[10]
                     
                             cur_student = int(cur_student)
                             new_cur_student = cur_student - 1
                             new_cur_student = str(new_cur_student)
 
-                            newSubInfo = subID + "    " + subClass + "    " + subCredit + "    " + subName + "    " + TeacherName + "    " + subTime + "    " + subPlace + "    " + new_cur_student + "    " + max_student + "\n"
+                            newSubInfo = subID + "    " + subClass + "    " + subCredit + "    " + subName + "    " + TeacherName + "    " + subTime + "    " + subPlace + "    " + new_cur_student + "    " + max_student + "    " + subNY + "    " + subMajor + "\n"
 
                             with fileinput.FileInput('subjects.txt', inplace = True, encoding="UTF8") as f:
                                 for line in f:

@@ -13,7 +13,7 @@ def manageSub(id):
         
         userList.append(line)
 
-        if (len(elementsOfLine) == 4):
+        if (len(elementsOfLine) == 5):
             if (elementsOfLine[0] == id):
                 userNum = elementsOfLine[2]
                 userName = elementsOfLine[3]

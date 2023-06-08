@@ -171,18 +171,20 @@ def getName():
 majors = ['컴퓨터공학부', '국어국문학과', '철학과', '기술경영학과', '물리학과']
 majors2 = ['컴', '국', '철', '기', '물']
 
-def getMajor():
+def getMajor(): 
 
     while True:
         print("학과 입력 > ", end = "")
         major = input("")
         major = major.replace(" ", "")
-
-        # 학과 입력 유효성 검사
-        if(major in majors) or (major in majors2):
-
-            # 학과 입력이 유효한 경우 => 이름 입력
+        
+        if major in majors:
             return major
+        
+        # 학과 입력 유효성 검사
+        if major in majors2:
+            # 학과 입력이 유효한 경우 => 이름 입력
+            return majors[majors2.index(major)]
         
         else:
             print("컴퓨터공학부, 국어국문학과, 철학과, 기술경영학과, 물리학과 중에서 다시 입력해주세요.")
@@ -211,7 +213,7 @@ def makeNewUser(id:str, pw:str, major:str, name:str, isStudent:bool):
     if len(major) == 1:
         majorNum = majors2.index(major) + 1
     else:
-        majorNum = major.index(major) + 1
+        majorNum = majors.index(major) + 1
         
     # 학번 설정
     studentOrProfessorNum = 0
@@ -225,7 +227,7 @@ def makeNewUser(id:str, pw:str, major:str, name:str, isStudent:bool):
 
     # 유저 파일에 기록
     userFile = open("users.txt", 'a', encoding="UTF-8")
-    userFile.write(id + "    " + pw + "    " + str(studentOrProfessorNum) + "    " + name + "\n\n")
+    userFile.write(id + "    " + pw + "    " + str(studentOrProfessorNum) + "    " + name + "    " + major + "\n\n")
     userFile.close()
 
     # 학번/교수번호 파일에 기록
@@ -243,7 +245,7 @@ def makeNewUser(id:str, pw:str, major:str, name:str, isStudent:bool):
     return
 
 def registerReview(id, pw, major, name):
-    print("-------------------------------<입력한 내용 확인>-------------------------------")
+    print("\n-------------------------------<입력한 내용 확인>-------------------------------")
     print("ID: " + id)
     print("PW: " + pw)
     print("학과: " + major)

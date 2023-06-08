@@ -1,7 +1,7 @@
 import re
 
 def creatSubject(id):
-    
+
     # 유저파일 읽기
     usersFile = open('users.txt', 'r', encoding='UTF8')
     usersFIleLines = usersFile.readlines()
@@ -11,10 +11,28 @@ def creatSubject(id):
     for line in usersFIleLines:
         elementsOfLine = line.strip().split('    ')
 
-        if (len(elementsOfLine) == 4):
+        if (len(elementsOfLine) == 5):
             if (elementsOfLine[0] == id):
                 userNum = elementsOfLine[2]
                 userName = elementsOfLine[3]
+
+                userMajor = userNum[0]
+
+                if (userMajor == "1"):
+                    userMajor = "컴퓨터공학부"
+
+                elif (userMajor == "2"):
+                    userMajor = "국어국문학과"
+
+                elif (userMajor == "3"):
+                    userMajor = "철학과"
+
+                elif (userMajor == "4"):
+                    userMajor = "기술경영학과"    
+
+                elif (userMajor == "5"):
+                    userMajor = "물리학과" 
+
 
     # 과목파일 읽기
     subFile = open('subjects.txt', 'r', encoding='UTF8')
@@ -80,23 +98,35 @@ def creatSubject(id):
         # 3.2 강의교시 입력
     subTime, subCredit = getSubTime(subDay, subList)
 
+    if(subTime == 0):
+        print("\n과목개설이 취소되었습니다. 교수메뉴로 돌아갑니다.")
+        print("================================================================================\n")
+        return
+
     # 4. 강의장소 입력
     subPlace = getSubPlace(subTime, wholeSubList)
 
-    # 5. 최대 수강인원 입력
+    # 5. 최대 수강가능 인원 입력
     maxAvailable = getMaxAvailable(subPlace)
+
+    # 6. 학과제한 여부 입력
+    if (subClass == "전공"):
+        isRestricted = getRestriction(userMajor)
+    
+    elif (subClass == "교양"):
+        isRestricted = "N"
 
 #==========================================================================================================================================================
 
 # 파일 수정
-    newSubinSub = subID + "    " + subClass + "    " + subCredit + "    " + subName + "    " + userName+"("+userNum+")" + "    " + subTime + "    " + subPlace + "    " + "0" + "    " + maxAvailable + "\n" 
-    newSubinUser = subID + "    " + subClass + "    " + subCredit + "    " + subName + "    " + userName+"("+userNum+")" + "    " + subTime + "    " + subPlace + "\n" 
+    newSubinSub = subID + "    " + subClass + "    " + subCredit + "    " + subName + "    " + userName+"("+userNum+")" + "    " + subTime + "    " + subPlace + "    " + "0" + "    " + maxAvailable + "    " + isRestricted + "    " + userMajor + "\n" 
+    newSubinUser = subID + "    " + subClass + "    " + subCredit + "    " + subName + "    " + userName+"("+userNum+")" + "    " + subTime + "    " + subPlace + "    " + isRestricted + "    " + userMajor + "\n" 
     
 
     #과목파일 수정
     subFile = open('subjects.txt', 'a', encoding='UTF8')
     subFile.write(newSubinSub)
-    subFile.close
+    subFile.close()
 
     #유저파일 수정
     usersFile = open('users.txt', 'r', encoding='UTF8')
@@ -117,6 +147,8 @@ def creatSubject(id):
     
     for line in usersFIleLines:
         usersFile.write(line)
+
+    usersFile.close()
 
     print("\n과목개설이 완료되었습니다. 교수메뉴로 돌아갑니다.")
     print("================================================================================\n")
@@ -184,8 +216,6 @@ def getSubName():
     subNamePattern = re.compile(r'^[a-zA-Z0-9가-힣]+$')
 
     while True: 
-        
-        isExist = False
 
         print("과목명 입력 > ", end = "")
         subName = input()
@@ -251,8 +281,11 @@ def getSubTime(subDay, subList):
         if(not isFirstPass):
 
             #강의 시작교시 입력
-            print("강의 시작교시 입력> ", end = "")
+            print("강의 시작교시 입력(0 입력 시 취소) > ", end = "")
             subStart = input()
+
+            if(subStart == "0"):
+                return 0, 0
 
          # 1. 시작교시 유효성 평가
             # 1.1 숫자로만 구성되어 있는지 검사
@@ -300,8 +333,11 @@ def getSubTime(subDay, subList):
         isFirstPass = True
 
         #강의 종료교시 입력
-        print("강의 종료교시 입력> ", end = "")
+        print("강의 종료교시 입력(0 입력 시 취소) > ", end = "")
         subFinish = input()
+
+        if(subFinish == "0"):
+            return 0, 0
 
         # 2. 종료교시 유효성 평가
         # 2.1 숫자로만 구성되어 있는지 검사
@@ -446,14 +482,14 @@ def getSubPlace(subTime, wholeSubList):
         if(isPass):        
             return subPlace
 
-# 최대 수강인원
+# 최대 수강가능 인원
 def getMaxAvailable(subPlace):
 
     numPattern = re.compile("[0-9]+")
 
     # 새: 10~20, 산: 10~30, 공: 10~40
     while True:
-        print("수강가능인원 입력 > ", end = "")
+        print("수강가능 인원 입력 > ", end = "")
         maxAvailable = input()
 
         #유효성 평가
@@ -495,6 +531,24 @@ def getMaxAvailable(subPlace):
         
         return str(maxAvailable)
     
+# 학과제한 여부
+def getRestriction(userMajor):
+
+    while True:
+        print(userMajor + " 학생만 수강신청이 가능하도록 제한하시겠습니까? (Y/N) > ", end = "")
+
+        yn = input()
+
+        if (yn == "Y"):
+            return "Y"
+
+        elif (yn == "N"):
+            return "N"
+
+        else:
+            print("다시 입력해주세요.")
+            print("\n--------------------------------------------------------------------------------")
+
             
 
 
